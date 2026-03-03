@@ -15,6 +15,8 @@
 - `Parent`（`Txx`）が1つ完了するたびに、必ず `git commit` を作成する。
 - 1つのコミットに複数 `Txx` を混在させない。
 - コミットメッセージは `Txx: <要約>` 形式で統一する。
+- `docs/parent-checklist.md` の該当 `Txx` 行更新をセットで実施する。
+- フック導入: `bash scripts/install-git-hooks.sh`
 
 ## マイルストーン
 

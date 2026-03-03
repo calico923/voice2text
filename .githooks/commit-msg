@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+msg_file="${1:-}"
+repo_root="$(git rev-parse --show-toplevel)"
+"${repo_root}/scripts/validate-parent-commit-msg.sh" "${msg_file}"

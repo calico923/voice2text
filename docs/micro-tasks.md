@@ -8,6 +8,8 @@
 - 同一 `Parent` の `Mxxx` がすべて完了し、対応する `Txx` の DoDを満たした時点で `Parent完了` とする。
 - `Parent完了` ごとに必ず1回 `git commit` を実行する（複数Parentのまとめコミットは禁止）。
 - コミットメッセージは `Txx: <要約>` 形式を必須とする。例: `T03: WSL2セットアップ手順を確定`
+- `Txx: ...` コミット時は `docs/parent-checklist.md` の該当行更新を必須とする。
+- フック導入: `bash scripts/install-git-hooks.sh`
 
 ## Phase 1: 仕様固定
 

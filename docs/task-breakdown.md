@@ -9,6 +9,8 @@
 - `Parent`（= `Txx`）を1つ完了するたびに、必ず `git commit` を作成する。
 - `Txx` 完了の判定は「対応する全 `Mxxx` が完了」かつ「`Txx` の DoD を満たす」の両方を満たした時点とする。
 - コミットは原則として1 `Txx` = 1コミット（複数 `Txx` のまとめコミットは禁止）。
+- `Parent` の完了記録は `docs/parent-checklist.md` を更新して残す。
+- フック導入: `bash scripts/install-git-hooks.sh`
 
 ## Phase 1: 仕様固定
 
