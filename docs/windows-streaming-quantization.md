@@ -16,7 +16,7 @@
 - VRAM見積もり:
   - モデル本体（BF16, 4B）: 約8GB
   - KVキャッシュ・ランタイム: 残り約8GBで運用
-  - 長時間運用時の余裕は T14 で実測して判断する
+  - 長時間運用時の余裕は T17 で実測して判断する
 - 補足:
   - vLLMはWindowsネイティブ非対応のため、WindowsではWSL2前提。
   - 公式モデルカードでは 16GB GPU 1枚での実行が案内されている。
@@ -63,7 +63,7 @@
 - 対処方法（いずれかを選択）:
   - `netsh interface portproxy` でホスト側ポートをWSL2へ転送
   - WSL2の `networkingMode=mirrored`（Windows 11 22H2以降）を有効化
-- 選択した方式を起動手順書（T04）に含める。
+- 選択した方式を接続手順書（T06/T08）に含める。
 
 ## セキュリティ最低ライン
 - 外部公開しない（ルータのポート開放なし）
@@ -73,10 +73,11 @@
 ## 段階的手順（実行順）
 1. WSL2上で `vllm serve mistralai/Voxtral-Mini-4B-Realtime-2602` を起動
 2. ローカル（Windows/WSL内）で `/v1/realtime` 接続確認
-3. MacクライアントをvLLM Realtimeイベント仕様で実装
-4. LAN越し接続確認
-5. VRAM・遅延・安定性を計測して本番設定を固定
-6. 問題が出た時のみ量子化ルートを検証
+3. Windows検証クライアントで接続経路（`localhost`/`WSL IP`/`Windows host IP`）を固定
+4. MacクライアントをvLLM Realtimeイベント仕様で実装
+5. LAN越し接続確認
+6. VRAM・遅延・安定性を計測して本番設定を固定
+7. 問題が出た時のみ量子化ルートを検証
 
 ## BF16継続 or 量子化移行の判断基準
 - BF16継続:
