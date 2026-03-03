@@ -12,7 +12,7 @@
 
 | Parent | Status | Reviewed On | Notes |
 |---|---|---|---|
-| T01 | TODO | - | |
+| T01 | DONE | 2026-03-04 | Realtimeイベント仕様メモを追加 |
 | T02 | TODO | - | |
 | T03 | TODO | - | |
 | T04 | TODO | - | |
