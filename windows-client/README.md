@@ -33,6 +33,7 @@ python windows-client/route_matrix.py \
 ```
 
 - 結果: `docs/windows-route-test-result.json`
+  - 各経路の `partial_count / final_count / error_count` を含む
 
 ## 6. 判定
 - `return_code=0` かつ `passed=true` の経路を候補にする。
