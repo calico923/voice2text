@@ -18,8 +18,8 @@
 | T04 | DONE | 2026-03-04 | vLLM起動スクリプトとserver READMEを追加 |
 | T05 | IN_PROGRESS | - | ローカル疎通クライアントと試験手順を追加（実接続試験待ち） |
 | T06 | TODO | - | |
-| T07 | TODO | - | |
-| T08 | TODO | - | |
+| T07 | IN_PROGRESS | - | Windows WAVクライアント実装を追加（実機接続試験待ち） |
+| T08 | IN_PROGRESS | - | 3経路マトリクス実行スクリプトと記録テンプレートを追加 |
 | T09 | TODO | - | |
 | T10 | TODO | - | |
 | T11 | TODO | - | |

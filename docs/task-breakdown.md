@@ -96,6 +96,9 @@
   - Windows本体で動くCLIクライアントを作成
   - 音声入力（WAVファイル入力を最低限）をRealtime APIへ送信
   - partial/final/error表示を実装
+- 成果物:
+  - `windows-client/realtime_wav_client.py`
+  - `windows-client/README.md`
 - 依存: T05
 - DoD:
   - Windows本体からWSL上 `/v1/realtime` に接続できる
@@ -107,6 +110,9 @@
   - `localhost` / `WSL IP` / `Windows host IP` の各経路を試験
   - 採用経路を1つに固定
   - 実行手順を記録
+- 成果物:
+  - `windows-client/route_matrix.py`
+  - `docs/windows-route-test-template.md`
 - 依存: T07
 - DoD:
   - 採用経路で再現性ある接続が確認できる
