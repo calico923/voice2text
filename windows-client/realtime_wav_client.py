@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
+import inspect
 import json
 import time
 import wave
@@ -131,7 +132,15 @@ async def run(args: argparse.Namespace) -> int:
     print(
         f"[info] url={args.url} wav={wav_path} chunk_ms={args.chunk_ms} chunks={len(chunks)}"
     )
-    async with websockets.connect(args.url, extra_headers=headers, max_size=8_000_000) as ws:
+    connect_kwargs = {"max_size": 8_000_000}
+    if headers:
+        params = inspect.signature(websockets.connect).parameters
+        if "additional_headers" in params:
+            connect_kwargs["additional_headers"] = headers
+        else:
+            connect_kwargs["extra_headers"] = headers
+
+    async with websockets.connect(args.url, **connect_kwargs) as ws:
         await send_stream(ws, chunks, args.chunk_ms)
         if args.send_response_create:
             await ws.send(json.dumps({"type": "response.create", "event_id": "response-00001"}))

@@ -85,6 +85,10 @@
   - T08で固定した採用経路に合わせてネットワーク設定を構成
   - MacからWindowsホストIP経由で `/v1/realtime` に接続確認
   - 遅延の簡易計測
+- 成果物:
+  - `docs/lan-connectivity-setup.md`
+  - `windows-network/setup-portproxy.ps1`
+  - `windows-network/setup-firewall-rule.ps1`
 - 依存: T05, T08
 - DoD:
   - MacからLAN越しで逐次文字起こし結果を受信できる

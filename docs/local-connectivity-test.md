@@ -48,3 +48,7 @@ error count:
 Result: PASS / FAIL
 Notes:
 ```
+
+## 8. 補助検証（任意）
+- 実vLLMが未導入の段階では `server/mock_realtime_server.py` を使って
+  クライアント送受信の単体疎通を先に確認できる。

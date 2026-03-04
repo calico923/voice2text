@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
+import inspect
 import json
 import time
 import wave
@@ -121,7 +122,15 @@ async def main() -> int:
         raise ValueError("wav has no audio frames")
 
     print(f"[send] url={args.url} wav={wav_path} chunk_ms={args.chunk_ms} frames={len(frames)}")
-    async with websockets.connect(args.url, extra_headers=headers, max_size=8_000_000) as ws:
+    connect_kwargs = {"max_size": 8_000_000}
+    if headers:
+        params = inspect.signature(websockets.connect).parameters
+        if "additional_headers" in params:
+            connect_kwargs["additional_headers"] = headers
+        else:
+            connect_kwargs["extra_headers"] = headers
+
+    async with websockets.connect(args.url, **connect_kwargs) as ws:
         await send_audio(ws, frames, args.chunk_ms)
         if not args.skip_response_create:
             await ws.send(json.dumps({"type": "response.create", "event_id": "resp-0001"}))
