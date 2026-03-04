@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
@@ -17,6 +18,9 @@ class RouteResult:
     url: str
     return_code: int
     passed: bool
+    partial_count: int
+    final_count: int
+    error_count: int
     stdout_tail: str
     stderr_tail: str
 
@@ -42,11 +46,28 @@ def run_once(route_name: str, url: str, wav: str, chunk_ms: int, timeout: float)
         "--send-response-create",
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True)
+    partial_count = 0
+    final_count = 0
+    error_count = 0
+
+    m = re.search(r"\[summary\]\s+(\{.*?\})", proc.stdout, flags=re.DOTALL)
+    if m:
+        try:
+            summary = json.loads(m.group(1))
+            partial_count = int(summary.get("partial", 0))
+            final_count = int(summary.get("final", 0))
+            error_count = int(summary.get("error", 0))
+        except (json.JSONDecodeError, ValueError, TypeError):
+            pass
+
     return RouteResult(
         route_name=route_name,
         url=url,
         return_code=proc.returncode,
         passed=proc.returncode == 0,
+        partial_count=partial_count,
+        final_count=final_count,
+        error_count=error_count,
         stdout_tail=tail_text(proc.stdout),
         stderr_tail=tail_text(proc.stderr),
     )

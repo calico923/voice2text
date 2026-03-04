@@ -130,6 +130,9 @@
   - マイク入力取得
   - PCM16 / 16kHz / mono 変換
   - フレーム分割（20-40ms）
+- 成果物:
+  - `client/src/audio_frame.py`
+  - `client/src/main.py`（WAV入力モード）
 - 依存: T02
 - DoD:
   - 連続録音で欠落なくフレーム生成できる
@@ -139,6 +142,9 @@
 - 作業:
   - 音声をbase64化してappendイベント送信
   - commit相当イベントを適切タイミングで送信
+- 成果物:
+  - `client/src/realtime_client.py`
+  - `client/src/main.py`
 - 依存: T01, T09
 - DoD:
   - サーバ側で受理され、推論が進む
@@ -149,6 +155,9 @@
   - partialは上書き表示
   - finalは確定バッファへ追記
   - error受信時の通知
+- 成果物:
+  - `client/src/transcript_store.py`
+  - `client/tests/test_transcript_store.py`
 - 依存: T10
 - DoD:
   - CLI上で逐次表示が崩れない
