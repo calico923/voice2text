@@ -18,6 +18,8 @@ class AppConfig:
     transcription_delay_ms: int
     auto_paste: bool
     paste_min_interval_ms: int
+    log_to_file: bool
+    log_file: str
 
     @staticmethod
     def from_env() -> "AppConfig":
@@ -32,4 +34,6 @@ class AppConfig:
             transcription_delay_ms=int(os.getenv("TRANSCRIPTION_DELAY_MS", "480")),
             auto_paste=_as_bool(os.getenv("AUTO_PASTE"), False),
             paste_min_interval_ms=int(os.getenv("PASTE_MIN_INTERVAL_MS", "700")),
+            log_to_file=_as_bool(os.getenv("LOG_TO_FILE"), False),
+            log_file=os.getenv("LOG_FILE", "client/logs/events.jsonl"),
         )

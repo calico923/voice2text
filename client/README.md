@@ -12,6 +12,8 @@
 - `client/src/realtime_client.py`: WebSocket送受信
 - `client/src/transcript_store.py`: partial/final/error状態管理
 - `client/src/paste_controller.py`: final貼り付け + ガード
+- `client/src/reconnect_controller.py`: 再接続バックオフ計算
+- `client/src/logger.py`: JSONLイベントログ
 - `client/src/config.py`: 環境変数設定
 
 ## Run
@@ -28,3 +30,5 @@ python3 client/src/main.py \
 - `TRANSCRIPTION_DELAY_MS` (default: `480`)
 - `AUTO_PASTE` (default: `false`)
 - `PASTE_MIN_INTERVAL_MS` (default: `700`)
+- `LOG_TO_FILE` (default: `false`)
+- `LOG_FILE` (default: `client/logs/events.jsonl`)

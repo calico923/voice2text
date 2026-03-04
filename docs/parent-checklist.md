@@ -25,8 +25,8 @@
 | T11 | IN_PROGRESS | - | TranscriptStoreと受信表示ロジックを追加 |
 | T12 | IN_PROGRESS | - | PasteControllerを追加（pbcopy + osascript） |
 | T13 | IN_PROGRESS | - | 空文字/重複/連投ガードと単体テストを追加 |
-| T14 | TODO | - | |
+| T14 | IN_PROGRESS | - | 再接続バックオフ制御と単体テストを追加 |
 | T15 | TODO | - | |
-| T16 | TODO | - | |
+| T16 | IN_PROGRESS | - | JSONLロガーと単体テストを追加 |
 | T17 | TODO | - | |
 | T18 | TODO | - | |

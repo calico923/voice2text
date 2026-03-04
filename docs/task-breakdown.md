@@ -198,6 +198,9 @@
   - 切断検知
   - バックオフ再接続
   - 再接続中ステータス表示
+- 成果物:
+  - `client/src/reconnect_controller.py`
+  - `client/tests/test_reconnect_controller.py`
 - 依存: T11
 - DoD:
   - 短時間切断から自動復帰できる
@@ -216,6 +219,9 @@
 - 作業:
   - ログON/OFF
   - 接続イベント・遅延・エラーを記録
+- 成果物:
+  - `client/src/logger.py`
+  - `client/tests/test_logger.py`
 - 依存: T14
 - DoD:
   - トラブル発生時に時系列追跡できる
