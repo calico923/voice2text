@@ -15,7 +15,7 @@
 | T01 | DONE | 2026-03-04 | Realtimeイベント仕様メモを追加 |
 | T02 | DONE | 2026-03-04 | 音声I/O仕様書を追加（PCM16/16kHz/mono, 20/40ms） |
 | T03 | DONE | 2026-03-04 | WSL2セットアップ手順とバージョン固定を追加 |
-| T04 | TODO | - | |
+| T04 | DONE | 2026-03-04 | vLLM起動スクリプトとserver READMEを追加 |
 | T05 | TODO | - | |
 | T06 | TODO | - | |
 | T07 | TODO | - | |

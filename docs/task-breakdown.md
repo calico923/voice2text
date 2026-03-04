@@ -56,6 +56,10 @@
 - 作業:
   - `vllm serve mistralai/Voxtral-Mini-4B-Realtime-2602` 実行コマンド作成
   - 主要引数（`max-model-len` 等）を外出し設定化
+- 成果物:
+  - `server/start_vllm.sh`
+  - `server/env.example`
+  - `server/README.md`
 - 依存: T03
 - DoD:
   - 1コマンドでサーバ起動できる
