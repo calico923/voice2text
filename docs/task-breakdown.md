@@ -210,6 +210,9 @@
 - 作業:
   - `transcription_delay_ms` 初期値 480ms で評価
   - チャンクサイズ比較（20ms/40ms）
+- 成果物:
+  - `client/tools/measure_latency.py`
+  - `docs/latency-compare-template.md`
 - 依存: T14
 - DoD:
   - 推奨初期値が1セット決まる

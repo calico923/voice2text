@@ -15,6 +15,7 @@
 - `client/src/reconnect_controller.py`: 再接続バックオフ計算
 - `client/src/logger.py`: JSONLイベントログ
 - `client/src/config.py`: 環境変数設定
+- `client/tools/measure_latency.py`: JSONLから遅延統計を算出
 
 ## Run
 ```bash

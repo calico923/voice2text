@@ -26,7 +26,7 @@
 | T12 | IN_PROGRESS | - | PasteControllerを追加（pbcopy + osascript） |
 | T13 | IN_PROGRESS | - | 空文字/重複/連投ガードと単体テストを追加 |
 | T14 | IN_PROGRESS | - | 再接続バックオフ制御と単体テストを追加 |
-| T15 | TODO | - | |
+| T15 | IN_PROGRESS | - | 遅延計測スクリプトと比較テンプレートを追加 |
 | T16 | IN_PROGRESS | - | JSONLロガーと単体テストを追加 |
 | T17 | TODO | - | |
 | T18 | TODO | - | |
