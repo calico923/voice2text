@@ -44,6 +44,8 @@
   - Python/vLLM依存のセットアップ手順作成
   - Python / CUDA / torch / vLLM の採用バージョンを固定
   - モデル取得手順（認証含む）整理
+- 成果物:
+  - `docs/wsl2-setup.md`
 - 依存: T01
 - DoD:
   - 初回環境構築が手順通りに完了する
