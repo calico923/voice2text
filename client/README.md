@@ -3,6 +3,7 @@
 ## Current scope
 - WAV入力ベースで Realtime API 送受信を確認できる最小CLI。
 - `partial/final/error` の基本表示と保持ロジックを実装済み。
+- Auto Paste の基盤（`pbcopy + osascript`）と誤貼り付けガードを実装済み。
 - マイク入力（リアルタイム録音）は次段階で追加。
 
 ## Files
@@ -10,6 +11,7 @@
 - `client/src/audio_frame.py`: PCM16/16kHz/mono正規化 + チャンク分割
 - `client/src/realtime_client.py`: WebSocket送受信
 - `client/src/transcript_store.py`: partial/final/error状態管理
+- `client/src/paste_controller.py`: final貼り付け + ガード
 - `client/src/config.py`: 環境変数設定
 
 ## Run
@@ -25,3 +27,4 @@ python3 client/src/main.py \
 - `AUDIO_CHUNK_MS` (`20` or `40`, default: `20`)
 - `TRANSCRIPTION_DELAY_MS` (default: `480`)
 - `AUTO_PASTE` (default: `false`)
+- `PASTE_MIN_INTERVAL_MS` (default: `700`)

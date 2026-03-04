@@ -23,8 +23,8 @@
 | T09 | IN_PROGRESS | - | WAV入力ベースの音声正規化/チャンク分割実装を追加 |
 | T10 | IN_PROGRESS | - | Realtime送信クライアントを追加（append/commit/response.create） |
 | T11 | IN_PROGRESS | - | TranscriptStoreと受信表示ロジックを追加 |
-| T12 | TODO | - | |
-| T13 | TODO | - | |
+| T12 | IN_PROGRESS | - | PasteControllerを追加（pbcopy + osascript） |
+| T13 | IN_PROGRESS | - | 空文字/重複/連投ガードと単体テストを追加 |
 | T14 | TODO | - | |
 | T15 | TODO | - | |
 | T16 | TODO | - | |

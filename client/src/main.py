@@ -7,6 +7,7 @@ from pathlib import Path
 
 from audio_frame import load_wav_as_pcm16_mono_16k, split_pcm16_into_chunks
 from config import AppConfig
+from paste_controller import PasteController
 from realtime_client import RealtimeClient
 from transcript_store import TranscriptStore
 
@@ -37,6 +38,10 @@ async def run() -> int:
 
     client = RealtimeClient(url=url, api_key=cfg.api_key)
     store = TranscriptStore()
+    paste = PasteController(
+        enabled=cfg.auto_paste,
+        min_interval_ms=cfg.paste_min_interval_ms,
+    )
 
     await client.connect()
     try:
@@ -54,6 +59,9 @@ async def run() -> int:
                 print(f"\rpartial: {store.partial}", end="", flush=True)
             elif et == "response.output_text.done":
                 print(f"\nfinal: {store.finals[-1]}")
+                pasted, reason = paste.paste(store.finals[-1])
+                if cfg.auto_paste:
+                    print(f"paste: {reason}")
             elif et == "error":
                 print(f"\nerror: {store.last_error}")
             else:

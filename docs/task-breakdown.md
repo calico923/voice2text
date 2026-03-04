@@ -170,6 +170,9 @@
 - 作業:
   - `pbcopy` + `osascript` 連携
   - Auto Pasteトグル（デフォルトOFF）
+- 成果物:
+  - `client/src/paste_controller.py`
+  - `client/src/main.py`
 - 依存: T11
 - DoD:
   - partialは貼り付けない
@@ -180,6 +183,9 @@
 - 作業:
   - 連続貼り付けレート制限
   - 貼り付け先未フォーカス時の扱い定義
+- 成果物:
+  - `client/src/paste_controller.py`
+  - `client/tests/test_paste_controller.py`
 - 依存: T12
 - DoD:
   - 想定外連打や暴発が再現しない

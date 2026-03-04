@@ -17,6 +17,7 @@ class AppConfig:
     audio_chunk_ms: int
     transcription_delay_ms: int
     auto_paste: bool
+    paste_min_interval_ms: int
 
     @staticmethod
     def from_env() -> "AppConfig":
@@ -30,4 +31,5 @@ class AppConfig:
             audio_chunk_ms=chunk_ms,
             transcription_delay_ms=int(os.getenv("TRANSCRIPTION_DELAY_MS", "480")),
             auto_paste=_as_bool(os.getenv("AUTO_PASTE"), False),
+            paste_min_interval_ms=int(os.getenv("PASTE_MIN_INTERVAL_MS", "700")),
         )
