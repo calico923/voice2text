@@ -70,6 +70,10 @@
 - 作業:
   - 最小クライアントで `/v1/realtime` に接続
   - テスト音声を送り逐次応答を確認
+- 成果物:
+  - `server/realtime_smoke_client.py`
+  - `server/testdata/test_ja_1s.wav`
+  - `docs/local-connectivity-test.md`
 - 依存: T04
 - DoD:
   - partial/final相当の逐次結果を取得できる
