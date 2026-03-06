@@ -71,7 +71,7 @@
 - 認証なしで運用する場合はLAN限定を厳守
 
 ## 段階的手順（実行順）
-1. WSL2上で `vllm serve mistralai/Voxtral-Mini-4B-Realtime-2602` を起動
+1. WSL2上で `bash server/start_vllm.sh` を起動
 2. ローカル（Windows/WSL内）で `/v1/realtime` 接続確認
 3. Windows検証クライアントで接続経路（`localhost`/`WSL IP`/`Windows host IP`）を固定
 4. MacクライアントをvLLM Realtimeイベント仕様で実装

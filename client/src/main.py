@@ -14,6 +14,9 @@ from reconnect_controller import ReconnectController
 from realtime_client import RealtimeClient
 from transcript_store import TranscriptStore
 
+PARTIAL_EVENT_TYPES = {"transcription.delta", "response.output_text.delta"}
+FINAL_EVENT_TYPES = {"transcription.done", "response.output_text.done"}
+
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Mac CLI realtime client (wav mode)")
@@ -74,9 +77,9 @@ async def run() -> int:
             store.on_event(event)
             et = event.get("type", "")
             logger.log("recv_event", received_type=et)
-            if et == "transcription.delta":
+            if et in PARTIAL_EVENT_TYPES:
                 print(f"\rpartial: {store.partial}", end="", flush=True)
-            elif et == "transcription.done":
+            elif et in FINAL_EVENT_TYPES:
                 print(f"\nfinal: {store.finals[-1]}")
                 latency_ms = int((time.monotonic() - commit_sent_at) * 1000) if commit_sent_at else -1
                 logger.log("final_text", text=store.finals[-1], latency_ms=latency_ms)
@@ -84,6 +87,8 @@ async def run() -> int:
                 if cfg.auto_paste:
                     print(f"paste: {reason}")
                 logger.log("paste", enabled=cfg.auto_paste, result=reason, pasted=pasted)
+            elif et == "session.created":
+                logger.log("session_created", session_id=event.get("id", ""))
             elif et == "error":
                 print(f"\nerror: {store.last_error}")
                 logger.log("error", error=store.last_error)

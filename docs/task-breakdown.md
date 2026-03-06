@@ -54,7 +54,7 @@
 ### T04 vLLMサーバ起動スクリプト作成
 - 目的: 手動ミスをなくして起動を固定化
 - 作業:
-  - `vllm serve mistralai/Voxtral-Mini-4B-Realtime-2602` 実行コマンド作成
+  - `bash server/start_vllm.sh` 実行コマンド作成
   - 主要引数（`max-model-len` 等）を外出し設定化
 - 成果物:
   - `server/start_vllm.sh`

@@ -33,8 +33,8 @@ python server/realtime_smoke_client.py \
 ```
 
 ## 6. 成功判定（T05 DoD）
-- `response.output_text.delta` が1回以上出る
-- `response.output_text.done` が1回以上出る
+- `transcription.delta` が1回以上出る
+- `transcription.done` が1回以上出る
 - `error` が0回、または原因を説明できる既知エラーのみ
 - 実行ログ（コマンド、日時、結果）を記録済み
 

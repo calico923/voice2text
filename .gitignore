@@ -4,3 +4,4 @@ __pycache__/
 
 server/.env
 server/logs/
+client/logs/

@@ -81,9 +81,9 @@ def normalize_result_counters() -> dict[str, int]:
 
 
 def classify_event(event_type: str) -> str:
-    if event_type == "transcription.delta":
+    if event_type in {"transcription.delta", "response.output_text.delta"}:
         return "partial"
-    if event_type == "transcription.done":
+    if event_type in {"transcription.done", "response.output_text.done"}:
         return "final"
     if event_type == "error":
         return "error"

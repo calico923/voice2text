@@ -16,12 +16,20 @@
 - `client/src/logger.py`: JSONLイベントログ
 - `client/src/config.py`: 環境変数設定
 - `client/tools/measure_latency.py`: JSONLから遅延統計を算出
+- `client/tools/continuous_eval.py`: 連続運用試験の反復実行 + 集計 + VRAMサンプリング
 
 ## Run
 ```bash
 python3 client/src/main.py \
-  --wav server/testdata/test_ja_1s.wav \
+  --wav server/testdata/test_en_hello_16k.wav \
   --url ws://127.0.0.1:8000/v1/realtime
+```
+
+```bash
+python3 client/tools/continuous_eval.py \
+  --wav server/testdata/test_en_hello_16k.wav \
+  --url ws://127.0.0.1:8000/v1/realtime \
+  --duration-minutes 30
 ```
 
 ## Environment variables

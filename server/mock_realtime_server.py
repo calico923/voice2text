@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import time
 from dataclasses import dataclass
 
 import websockets
@@ -15,53 +16,95 @@ import websockets
 class SessionState:
     append_count: int = 0
     committed: bool = False
+    session_updated: bool = False
+    final_sent: bool = False
+
+
+def build_error(code: str, message: str) -> str:
+    return json.dumps(
+        {
+            "type": "error",
+            "error": {
+                "code": code,
+                "message": message,
+            },
+        },
+        ensure_ascii=False,
+    )
 
 
 async def handle_connection(websocket):
     state = SessionState()
+    await websocket.send(
+        json.dumps(
+            {
+                "type": "session.created",
+                "id": "mock-session-1",
+                "created": int(time.time()),
+            },
+            ensure_ascii=False,
+        )
+    )
     try:
         async for raw in websocket:
             try:
                 event = json.loads(raw)
             except json.JSONDecodeError:
-                await websocket.send(
-                    json.dumps(
-                        {
-                            "type": "error",
-                            "error": {
-                                "code": "invalid_json",
-                                "message": "payload must be valid json",
-                            },
-                        },
-                        ensure_ascii=False,
-                    )
-                )
+                await websocket.send(build_error("invalid_json", "payload must be valid json"))
                 continue
 
             event_type = event.get("type")
-            if event_type == "input_audio_buffer.append":
+            if event_type == "session.update":
+                state.session_updated = True
+            elif event_type.startswith("input_audio_buffer.") and not state.session_updated:
+                await websocket.send(
+                    build_error(
+                        "model_not_validated",
+                        "send session.update before audio events",
+                    )
+                )
+            elif event_type == "input_audio_buffer.append":
                 state.append_count += 1
                 if state.append_count in (1, 3, 5):
                     await websocket.send(
                         json.dumps(
                             {
-                                "type": "response.output_text.delta",
-                                "response_id": "mock-resp-1",
-                                "segment_id": "mock-seg-1",
+                                "type": "transcription.delta",
                                 "delta": f"delta-{state.append_count}",
                             },
                             ensure_ascii=False,
                         )
                     )
             elif event_type == "input_audio_buffer.commit":
-                state.committed = True
+                if event.get("final"):
+                    if not state.committed:
+                        await websocket.send(
+                            build_error(
+                                "missing_commit",
+                                "commit is required before final=true",
+                            )
+                        )
+                    elif not state.final_sent:
+                        state.final_sent = True
+                        await websocket.send(
+                            json.dumps(
+                                {
+                                    "type": "transcription.done",
+                                    "segment_id": "mock-seg-1",
+                                    "text": "mock-final-text",
+                                },
+                                ensure_ascii=False,
+                            )
+                        )
+                else:
+                    state.committed = True
             elif event_type == "response.create":
-                if state.committed:
+                if state.committed and not state.final_sent:
+                    state.final_sent = True
                     await websocket.send(
                         json.dumps(
                             {
-                                "type": "response.output_text.done",
-                                "response_id": "mock-resp-1",
+                                "type": "transcription.done",
                                 "segment_id": "mock-seg-1",
                                 "text": "mock-final-text",
                             },
@@ -69,31 +112,9 @@ async def handle_connection(websocket):
                         )
                     )
                 else:
-                    await websocket.send(
-                        json.dumps(
-                            {
-                                "type": "error",
-                                "error": {
-                                    "code": "missing_commit",
-                                    "message": "commit is required before response.create",
-                                },
-                            },
-                            ensure_ascii=False,
-                        )
-                    )
+                    await websocket.send(build_error("missing_commit", "commit is required before response.create"))
             else:
-                await websocket.send(
-                    json.dumps(
-                        {
-                            "type": "error",
-                            "error": {
-                                "code": "unsupported_event",
-                                "message": f"unsupported type: {event_type}",
-                            },
-                        },
-                        ensure_ascii=False,
-                    )
-                )
+                await websocket.send(build_error("unsupported_event", f"unsupported type: {event_type}"))
     except websockets.ConnectionClosed:
         return
 

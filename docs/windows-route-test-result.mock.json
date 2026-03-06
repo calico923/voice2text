@@ -1,5 +1,5 @@
 {
-  "wav": "server/testdata/test_ja_1s.wav",
+  "wav": "server/testdata/test_en_hello_16k.wav",
   "chunk_ms": 20,
   "receive_timeout": 12.0,
   "results": [
@@ -11,7 +11,7 @@
       "partial_count": 3,
       "final_count": 1,
       "error_count": 0,
-      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_ja_1s.wav chunk_ms=20 chunks=50\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-1\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-3\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-5\"}\n{\"type\": \"response.output_text.done\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 0}\n",
+      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_en_hello_16k.wav chunk_ms=20 chunks=104 model=mistralai/Voxtral-Mini-4B-Realtime-2602\n{\"type\": \"session.created\", \"id\": \"mock-session-1\", \"created\": 1772838006}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-1\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-3\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-5\"}\n{\"type\": \"transcription.done\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 1}\n",
       "stderr_tail": ""
     },
     {
@@ -22,7 +22,7 @@
       "partial_count": 3,
       "final_count": 1,
       "error_count": 0,
-      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_ja_1s.wav chunk_ms=20 chunks=50\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-1\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-3\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-5\"}\n{\"type\": \"response.output_text.done\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 0}\n",
+      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_en_hello_16k.wav chunk_ms=20 chunks=104 model=mistralai/Voxtral-Mini-4B-Realtime-2602\n{\"type\": \"session.created\", \"id\": \"mock-session-1\", \"created\": 1772838020}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-1\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-3\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-5\"}\n{\"type\": \"transcription.done\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 1}\n",
       "stderr_tail": ""
     },
     {
@@ -33,7 +33,7 @@
       "partial_count": 3,
       "final_count": 1,
       "error_count": 0,
-      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_ja_1s.wav chunk_ms=20 chunks=50\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-1\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-3\"}\n{\"type\": \"response.output_text.delta\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"delta\": \"delta-5\"}\n{\"type\": \"response.output_text.done\", \"response_id\": \"mock-resp-1\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 0}\n",
+      "stdout_tail": "[info] url=ws://127.0.0.1:18000/v1/realtime wav=server/testdata/test_en_hello_16k.wav chunk_ms=20 chunks=104 model=mistralai/Voxtral-Mini-4B-Realtime-2602\n{\"type\": \"session.created\", \"id\": \"mock-session-1\", \"created\": 1772838034}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-1\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-3\"}\n{\"type\": \"transcription.delta\", \"delta\": \"delta-5\"}\n{\"type\": \"transcription.done\", \"segment_id\": \"mock-seg-1\", \"text\": \"mock-final-text\"}\n[summary] {\"partial\": 3, \"final\": 1, \"error\": 0, \"other\": 1}\n",
       "stderr_tail": ""
     }
   ]
