@@ -74,6 +74,11 @@ uv pip install --python /tmp/voice2text-vllm-venv311-clean/bin/python "mistral-c
   - runtime venv の `python` / `vllm` 優先
   - `VLLM_EXTRA_ARGS` の子プロセス漏れ防止
   - `COMPILATION_CONFIG` の既定値で余分な `}` が付く不具合を修正
+- `server/realtime_smoke_client.py`
+  - `session.update` / `transcription.delta` / `transcription.done` に合わせて protocol を更新
+  - `input_audio_buffer.commit` と `final=true` の終了通知を追加
+- `client/src/*`, `windows-client/*`
+  - 旧 `response.create` / `response.output_text.*` 前提を current vLLM realtime protocol に更新
 - `server/env.example`
   - WSL 安定起動用の例を追加
 - `server/README.md`
@@ -84,7 +89,7 @@ uv pip install --python /tmp/voice2text-vllm-venv311-clean/bin/python "mistral-c
 ## 7. 制約と残課題
 - 現在の起動条件 `--enforce-eager --max-num-seqs 1` は安定性優先で、性能は抑えめ。
 - `python3.11-dev` と `nvcc` をまだ入れていないため、compile 系の最適化は未評価。
-- `/v1/realtime` ルートは起動済みだが、実音声を使った end-to-end セッション確認はまだ未実施。
+- `/v1/realtime` のローカル speech smoke test は完了したが、Windows 本体や LAN 越しの疎通はまだ未実施。
 - Windows 本体や LAN 越しの再接続系評価もこれから。
 
 ## 8. 次の実装計画（2026-03-07更新）
@@ -102,7 +107,7 @@ uv pip install --python /tmp/voice2text-vllm-venv311-clean/bin/python "mistral-c
 - [ ] eager 構成と compile 構成で、起動時間・VRAM・初回応答時間を比較する。
 
 ### 3rd: 実運用経路の疎通確認
-- [ ] `server/realtime_smoke_client.py` で `/v1/realtime` のローカル音声試験を行う。
+- [x] `server/realtime_smoke_client.py` で `/v1/realtime` のローカル音声試験を行う。
 - [ ] Windows 本体からの接続試験を再実施する。
 - [ ] 採用経路で 30分 / 60分 の連続試験に進む。
 
@@ -118,8 +123,13 @@ uv pip install --python /tmp/voice2text-vllm-venv311-clean/bin/python "mistral-c
 - `server/start_vllm.sh`
   - `COMPILATION_CONFIG` の既定値で `{"cudagraph_mode":"PIECEWISE"}}` になる不具合を修正した。
   - 修正後に `.env` ベースで再起動し、`/health` と `/version` の到達を確認した。
+- `server/realtime_smoke_client.py` / `client/src/*` / `windows-client/*`
+  - 実際の vLLM 0.17 realtime 実装では `response.create` / `response.output_text.*` ではなく、`session.update` / `transcription.delta` / `transcription.done` を使うことを確認した。
+  - protocol を合わせた後、spoken WAV で local `/v1/realtime` smoke test を PASS させた。
 - `docs/wsl2-setup.md`
   - `/tmp` runtime venv の作成と nightly `vllm` 導入手順を統合した。
   - `mistral-common[soundfile]` の追加、`server/.env` 初期化、`GET /health` / `GET /version` の確認手順を追記した。
   - 実測値に合わせて `torch=2.10.0+cu128`、`torch.version.cuda=12.8`、`vllm=0.17.0rc1.dev124+g225d1090a` に更新した。
-- これにより 1st フェーズで残る作業は「実機再起動後の再現確認」のみになった。
+- `server/testdata/test_en_hello_16k.wav`
+  - spoken WAV を追加し、tone WAV では ASR PASS 判定に使えない点を切り分けた。
+- これにより残る主要作業は「実機再起動後の再現確認」と「Windows / LAN 経路試験」になった。

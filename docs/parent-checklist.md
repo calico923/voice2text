@@ -16,7 +16,7 @@
 | T02 | DONE | 2026-03-04 | 音声I/O仕様書を追加（PCM16/16kHz/mono, 20/40ms） |
 | T03 | DONE | 2026-03-04 | WSL2セットアップ手順とバージョン固定を追加 |
 | T04 | DONE | 2026-03-07 | vLLM GPU安定起動のWSL手順・トラブルシュート・再検証ログを更新 |
-| T05 | IN_PROGRESS | - | ローカル疎通クライアントと試験手順を追加（実接続試験待ち） |
+| T05 | DONE | 2026-03-07 | 現行 vLLM realtime protocol に合わせて client を修正し、spoken WAV で local /v1/realtime 疎通を確認 |
 | T06 | IN_PROGRESS | - | LAN設定手順とWindowsネットワークスクリプトを追加 |
 | T07 | IN_PROGRESS | - | Windows WAVクライアント実装を追加（実機接続試験待ち） |
 | T08 | IN_PROGRESS | - | 3経路マトリクス実行スクリプトと記録テンプレートを追加 |

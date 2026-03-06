@@ -8,11 +8,14 @@ from typing import AsyncIterator
 
 import websockets
 
+DEFAULT_MODEL_ID = "mistralai/Voxtral-Mini-4B-Realtime-2602"
+
 
 class RealtimeClient:
-    def __init__(self, url: str, api_key: str = "") -> None:
+    def __init__(self, url: str, api_key: str = "", model: str = "") -> None:
         self.url = url
         self.api_key = api_key
+        self.model = model
         self._ws = None
 
     async def connect(self) -> None:
@@ -40,24 +43,30 @@ class RealtimeClient:
             raise RuntimeError("not connected")
         payload = {
             "type": "input_audio_buffer.append",
-            "event_id": event_id,
             "audio": base64.b64encode(pcm16_chunk).decode("ascii"),
         }
         await self._ws.send(json.dumps(payload, ensure_ascii=False))
 
-    async def send_commit(self, event_id: str = "commit-0001") -> None:
+    async def send_session_update(self, model: str | None = None) -> None:
         if self._ws is None:
             raise RuntimeError("not connected")
         await self._ws.send(
-            json.dumps({"type": "input_audio_buffer.commit", "event_id": event_id}, ensure_ascii=False)
+            json.dumps(
+                {
+                    "type": "session.update",
+                    "model": model or self.model or DEFAULT_MODEL_ID,
+                },
+                ensure_ascii=False,
+            )
         )
 
-    async def send_response_create(self, event_id: str = "response-0001") -> None:
+    async def send_commit(self, event_id: str = "commit-0001", final: bool = False) -> None:
         if self._ws is None:
             raise RuntimeError("not connected")
-        await self._ws.send(
-            json.dumps({"type": "response.create", "event_id": event_id}, ensure_ascii=False)
-        )
+        await self._ws.send(json.dumps({"type": "input_audio_buffer.commit", "final": final}, ensure_ascii=False))
+
+    async def send_response_create(self, event_id: str = "response-0001") -> None:
+        raise RuntimeError("response.create is not supported by the current vLLM realtime server")
 
     async def iter_events(self, timeout_sec: float = 10.0) -> AsyncIterator[dict]:
         if self._ws is None:

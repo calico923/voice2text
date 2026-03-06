@@ -19,9 +19,14 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Mac CLI realtime client (wav mode)")
     p.add_argument("--wav", required=True, help="WAV file path for initial E2E")
     p.add_argument("--url", default="")
+    p.add_argument("--model", default="")
     p.add_argument("--chunk-ms", type=int, default=0)
     p.add_argument("--receive-timeout", type=float, default=12.0)
-    p.add_argument("--no-response-create", action="store_true")
+    p.add_argument(
+        "--no-response-create",
+        action="store_true",
+        help="Deprecated. Current vLLM realtime server does not use response.create.",
+    )
     return p.parse_args()
 
 
@@ -39,7 +44,7 @@ async def run() -> int:
     pcm16 = load_wav_as_pcm16_mono_16k(wav_path)
     chunks = split_pcm16_into_chunks(pcm16, chunk_ms)
 
-    client = RealtimeClient(url=url, api_key=cfg.api_key)
+    client = RealtimeClient(url=url, api_key=cfg.api_key, model=args.model)
     store = TranscriptStore()
     logger = JsonlLogger(enabled=cfg.log_to_file, path=cfg.log_file)
     reconnect = ReconnectController()
@@ -53,6 +58,8 @@ async def run() -> int:
     reconnect.reset()
     logger.log("connect", server_url=url)
     try:
+        await client.send_session_update()
+        logger.log("send_session_update", model=args.model or client.model or "default")
         for i, chunk in enumerate(chunks, 1):
             await client.send_append(chunk, f"append-{i:05d}")
             logger.log("send_append", index=i, size=len(chunk))
@@ -60,17 +67,16 @@ async def run() -> int:
         await client.send_commit()
         commit_sent_at = time.monotonic()
         logger.log("send_commit")
-        if not args.no_response_create:
-            await client.send_response_create()
-            logger.log("send_response_create")
+        await client.send_commit(event_id="commit-final-0002", final=True)
+        logger.log("send_commit_final")
 
         async for event in client.iter_events(timeout_sec=args.receive_timeout):
             store.on_event(event)
             et = event.get("type", "")
             logger.log("recv_event", received_type=et)
-            if et == "response.output_text.delta":
+            if et == "transcription.delta":
                 print(f"\rpartial: {store.partial}", end="", flush=True)
-            elif et == "response.output_text.done":
+            elif et == "transcription.done":
                 print(f"\nfinal: {store.finals[-1]}")
                 latency_ms = int((time.monotonic() - commit_sent_at) * 1000) if commit_sent_at else -1
                 logger.log("final_text", text=store.finals[-1], latency_ms=latency_ms)

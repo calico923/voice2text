@@ -43,7 +43,6 @@ def run_once(route_name: str, url: str, wav: str, chunk_ms: int, timeout: float)
         str(chunk_ms),
         "--receive-timeout",
         str(timeout),
-        "--send-response-create",
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     partial_count = 0
@@ -78,7 +77,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--localhost-url", default="ws://127.0.0.1:8000/v1/realtime")
     p.add_argument("--wsl-ip-url", default="ws://172.25.32.1:8000/v1/realtime")
     p.add_argument("--host-ip-url", default="ws://192.168.0.10:8000/v1/realtime")
-    p.add_argument("--wav", default="server/testdata/test_ja_1s.wav")
+    p.add_argument("--wav", default="server/testdata/test_en_hello_16k.wav")
     p.add_argument("--chunk-ms", type=int, default=20, choices=[20, 40])
     p.add_argument("--receive-timeout", type=float, default=12.0)
     p.add_argument(

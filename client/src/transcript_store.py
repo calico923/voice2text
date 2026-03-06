@@ -12,11 +12,15 @@ class TranscriptStore:
 
     def on_event(self, event: dict) -> None:
         event_type = event.get("type", "")
+        if event_type == "transcription.delta":
+            self.partial += str(event.get("delta", ""))
+            return
+
         if event_type == "response.output_text.delta":
             self.partial = str(event.get("delta", ""))
             return
 
-        if event_type == "response.output_text.done":
+        if event_type in {"transcription.done", "response.output_text.done"}:
             segment_id = str(event.get("segment_id", ""))
             text = str(event.get("text", "")).strip()
             if not text:
@@ -33,6 +37,10 @@ class TranscriptStore:
 
         if event_type == "error":
             err = event.get("error", {})
-            code = err.get("code", "unknown")
-            msg = err.get("message", "")
+            if isinstance(err, dict):
+                code = str(err.get("code", "unknown"))
+                msg = str(err.get("message", ""))
+            else:
+                code = str(event.get("code", "unknown"))
+                msg = str(err)
             self.last_error = f"{code}: {msg}".strip()

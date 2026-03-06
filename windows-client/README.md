@@ -13,15 +13,14 @@
 ## 3. 前提
 - Python 3.10+（推奨 3.11）
 - `pip install websockets==11.0.3`
-- テスト音声: `server/testdata/test_ja_1s.wav`
+- テスト音声: `server/testdata/test_en_hello_16k.wav`
 
 ## 4. 単発実行（1経路）
 ```bash
 python windows-client/realtime_wav_client.py \
   --url ws://127.0.0.1:8000/v1/realtime \
-  --wav server/testdata/test_ja_1s.wav \
-  --chunk-ms 20 \
-  --send-response-create
+  --wav server/testdata/test_en_hello_16k.wav \
+  --chunk-ms 20
 ```
 
 ## 5. 経路マトリクス実行（3経路）

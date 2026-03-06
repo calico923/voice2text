@@ -17,15 +17,22 @@ from pathlib import Path
 
 import websockets
 
+DEFAULT_MODEL_ID = "mistralai/Voxtral-Mini-4B-Realtime-2602"
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Send wav to Realtime API and print events.")
     parser.add_argument("--url", required=True, help="e.g. ws://127.0.0.1:8000/v1/realtime")
     parser.add_argument("--wav", required=True, help="PCM16/16kHz/mono wav path")
+    parser.add_argument("--model", default="", help="Model id/path for session.update")
     parser.add_argument("--chunk-ms", type=int, default=20, choices=[20, 40])
     parser.add_argument("--receive-timeout", type=float, default=12.0)
     parser.add_argument("--api-key", default="")
-    parser.add_argument("--send-response-create", action="store_true")
+    parser.add_argument(
+        "--send-response-create",
+        action="store_true",
+        help="Deprecated. Current vLLM realtime server does not use response.create.",
+    )
     parser.add_argument("--pretty", action="store_true")
     return parser
 
@@ -50,20 +57,17 @@ def load_wav(path: Path, chunk_ms: int) -> list[bytes]:
 
 
 async def send_stream(ws, chunks: list[bytes], chunk_ms: int) -> None:
-    for i, chunk in enumerate(chunks, 1):
+    for chunk in chunks:
         event = {
             "type": "input_audio_buffer.append",
-            "event_id": f"append-{i:05d}",
             "audio": base64.b64encode(chunk).decode("ascii"),
         }
         await ws.send(json.dumps(event, ensure_ascii=False))
         await asyncio.sleep(chunk_ms / 1000.0)
 
+    await ws.send(json.dumps({"type": "input_audio_buffer.commit"}, ensure_ascii=False))
     await ws.send(
-        json.dumps(
-            {"type": "input_audio_buffer.commit", "event_id": "commit-00001"},
-            ensure_ascii=False,
-        )
+        json.dumps({"type": "input_audio_buffer.commit", "final": True}, ensure_ascii=False)
     )
 
 
@@ -77,9 +81,9 @@ def normalize_result_counters() -> dict[str, int]:
 
 
 def classify_event(event_type: str) -> str:
-    if event_type == "response.output_text.delta":
+    if event_type == "transcription.delta":
         return "partial"
-    if event_type == "response.output_text.done":
+    if event_type == "transcription.done":
         return "final"
     if event_type == "error":
         return "error"
@@ -130,7 +134,8 @@ async def run(args: argparse.Namespace) -> int:
         headers["Authorization"] = f"Bearer {args.api_key}"
 
     print(
-        f"[info] url={args.url} wav={wav_path} chunk_ms={args.chunk_ms} chunks={len(chunks)}"
+        f"[info] url={args.url} wav={wav_path} chunk_ms={args.chunk_ms} "
+        f"chunks={len(chunks)} model={args.model or DEFAULT_MODEL_ID}"
     )
     connect_kwargs = {"max_size": 8_000_000}
     if headers:
@@ -141,9 +146,16 @@ async def run(args: argparse.Namespace) -> int:
             connect_kwargs["extra_headers"] = headers
 
     async with websockets.connect(args.url, **connect_kwargs) as ws:
+        await ws.send(
+            json.dumps(
+                {
+                    "type": "session.update",
+                    "model": args.model or DEFAULT_MODEL_ID,
+                },
+                ensure_ascii=False,
+            )
+        )
         await send_stream(ws, chunks, args.chunk_ms)
-        if args.send_response_create:
-            await ws.send(json.dumps({"type": "response.create", "event_id": "response-00001"}))
         counters = await receive_stream(ws, args.receive_timeout, args.pretty)
 
     print(f"[summary] {json.dumps(counters, ensure_ascii=False)}")
