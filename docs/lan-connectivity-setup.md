@@ -56,14 +56,31 @@ wsl --shutdown
 ```
 
 ## 6. 採用方針（暫定）
-- 暫定採用: `mirrored`
+- 実測採用: `portproxy`
 - 理由:
-  - WSL IP変動への追従作業が少ない
-  - 運用時の再設定コストが低い
+  - 2026-03-08 の実機試験で `Mac -> Windows host IP -> WSL` 経路が成功した
+  - 現行環境ではこの方式が最短で再現できた
 - 最終確定:
-  - `T08` の3経路試験結果で最終決定する
+  - `T08` の3経路試験結果で最終記録を残す
 
 ## 7. 完了条件（T06 DoD向け）
-- [ ] 採用方式で Mac -> Windows host IP の接続成功ログがある
-- [ ] Firewall を Mac IP に限定できている
-- [ ] 第三者が再現できる手順として文書化済み
+- [x] 採用方式で Mac -> Windows host IP の接続成功ログがある
+- [x] Firewall を Mac IP に限定できている
+- [x] 第三者が再現できる手順として文書化済み
+
+## 8. 実行記録（2026-03-08）
+```text
+Date: 2026-03-08
+Adopted route: Mac -> ws://192.168.1.27:8000/v1/realtime -> Windows portproxy -> 172.22.38.155:8000
+WSL IP: 172.22.38.155
+Windows host IP: 192.168.1.27
+Proxy setup: .\windows-network\setup-portproxy.ps1 -ListenAddress 0.0.0.0 -ListenPort 8000 -ConnectAddress 172.22.38.155 -ConnectPort 8000
+Firewall setup: .\windows-network\setup-firewall-rule.ps1 -RuleName "voice2text-realtime-8000" -Port 8000 -MacIp <user-local-mac-ip>
+Mac WAV command: python3 client/src/main.py --wav server/testdata/test_en_hello_16k.wav --url ws://192.168.1.27:8000/v1/realtime
+Mac mic command: python3 client/src/main.py --mic --mic-device <avfoundation-device-index> --url ws://192.168.1.27:8000/v1/realtime
+Result: PASS
+Notes:
+- Mac から ws://127.0.0.1:8000/v1/realtime を使うと Mac 自身を見に行くため失敗する。
+- portproxy/firewall 設定前は opening handshake timeout が発生した。
+- 実 IP はドット区切りで指定する。プレースホルダやカンマ区切りは名前解決エラーになる。
+```

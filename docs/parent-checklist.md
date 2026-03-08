@@ -17,9 +17,9 @@
 | T03 | DONE | 2026-03-04 | WSL2セットアップ手順とバージョン固定を追加 |
 | T04 | DONE | 2026-03-07 | vLLM GPU安定起動のWSL手順・トラブルシュート・再検証ログを更新 |
 | T05 | DONE | 2026-03-07 | 現行 vLLM realtime protocol に合わせて client を修正し、spoken WAV で local /v1/realtime 疎通を確認 |
-| T06 | IN_PROGRESS | - | LAN設定手順とWindowsネットワークスクリプトを追加 |
-| T07 | IN_PROGRESS | - | Windows WAVクライアント実装を追加（実機接続試験待ち） |
-| T08 | IN_PROGRESS | - | 3経路マトリクス実行スクリプトと記録テンプレートを追加 |
+| T06 | DONE | 2026-03-08 | Mac -> Windows host IP `192.168.1.27:8000` -> WSL `172.22.38.155:8000` の LAN 疎通を WAV/実マイクで確認し、portproxy 手順を記録 |
+| T07 | DONE | 2026-03-08 | Windows クライアントで localhost 経由の WAV/実マイク文字起こしを確認 |
+| T08 | IN_PROGRESS | - | 採用経路候補は Windows host IP + portproxy。3経路マトリクスの定量記録は未実施 |
 | T09 | IN_PROGRESS | - | WAV入力ベースの音声正規化/チャンク分割に加え、有限秒のマイク取り込み基盤を追加 |
 | T10 | IN_PROGRESS | - | Realtime送信クライアントを追加（append/commit/response.create） |
 | T11 | IN_PROGRESS | - | TranscriptStoreと受信表示ロジックを追加 |
