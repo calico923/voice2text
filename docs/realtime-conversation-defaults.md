@@ -23,6 +23,9 @@
 - `120ms` partial flush: UI のみで使う目安。CLI は受信イベントをそのまま表示する。
 
 ## 現在の実装との対応
+- `client/src/main.py`
+  - macOS/Linux の `--mic` でも上記初期値を既定にする
+  - `partial` 表示は `120ms` 間隔で更新し、`final` だけを後段入力の候補にする
 - `windows-client/realtime_wav_client.py`
   - `--mic` では上記 VAD 初期値を既定にする
   - `--wav` は既存どおり 1 ファイル 1 commit の検証用モード

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import audioop
 import asyncio
 import math
 import os
@@ -19,6 +20,37 @@ def chunk_count_from_duration(duration_sec: float, chunk_ms: int) -> int:
     if duration_sec <= 0:
         raise ValueError("duration_sec must be > 0")
     return max(1, math.ceil((duration_sec * 1000.0) / chunk_ms))
+
+
+def chunk_count_from_ms(duration_ms: int, chunk_ms: int, *, allow_zero: bool = False) -> int:
+    if duration_ms < 0:
+        raise ValueError("duration_ms must be >= 0")
+    if duration_ms == 0:
+        if allow_zero:
+            return 0
+        raise ValueError("duration_ms must be > 0")
+    return max(1, math.ceil(duration_ms / chunk_ms))
+
+
+def is_speech_chunk(chunk: bytes, rms_threshold: int) -> bool:
+    return bool(chunk) and audioop.rms(chunk, 2) >= rms_threshold
+
+
+def should_commit_utterance(
+    utterance_chunks: int,
+    trailing_silence_chunks: int,
+    *,
+    min_utterance_chunks: int,
+    max_utterance_chunks: int,
+    vad_silence_chunks: int,
+) -> bool:
+    if utterance_chunks == 0:
+        return False
+    if utterance_chunks >= max_utterance_chunks:
+        return True
+    return (
+        utterance_chunks >= min_utterance_chunks and trailing_silence_chunks >= vad_silence_chunks
+    )
 
 
 def build_capture_command(

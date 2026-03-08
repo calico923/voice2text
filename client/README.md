@@ -3,9 +3,17 @@
 ## Current scope
 - WAV入力ベースで Realtime API 送受信を確認できる最小CLI。
 - `--mic` による既定マイクの有限秒キャプチャを追加済み（macOS は `ffmpeg`、Linux は `arecord` 前提）。
+- `--mic` は会話向けの初期値で VAD 分割する。
+  - `chunk-ms=20`
+  - `vad-silence-ms=600`
+  - `min-utterance-ms=400`
+  - `max-utterance-ms=6000`
+  - `pre-roll-ms=200`
+  - `vad-rms-threshold=700`
+- 送信と受信は並列で進み、`partial` は `120ms` ごとに表示更新する。
 - `partial/final/error` の基本表示と保持ロジックを実装済み。
 - Auto Paste の基盤（`pbcopy + osascript`）と誤貼り付けガードを実装済み。
-- 長時間の常時録音/VAD は次段階で追加。
+- 常時録音/VAD の本格運用は次段階で追加。
 
 ## Files
 - `client/src/main.py`: CLI entrypoint
@@ -30,7 +38,7 @@ python3 client/src/main.py \
 ```bash
 python3 client/src/main.py \
   --mic \
-  --mic-seconds 5 \
+  --mic-seconds 30 \
   --url ws://127.0.0.1:8000/v1/realtime
 ```
 
@@ -45,10 +53,18 @@ python3 client/tools/continuous_eval.py \
 - `SERVER_URL` (default: `ws://127.0.0.1:8000/v1/realtime`)
 - `API_KEY` (default: empty)
 - `AUDIO_CHUNK_MS` (`20` or `40`, default: `20`)
-- `TRANSCRIPTION_DELAY_MS` (default: `480`)
+- `PARTIAL_FLUSH_MS` (default: `120`)
+- `TRANSCRIPTION_DELAY_MS` (legacy fallback for `PARTIAL_FLUSH_MS`)
+- `VAD_SILENCE_MS` (default: `600`)
+- `MIN_UTTERANCE_MS` (default: `400`)
+- `MAX_UTTERANCE_MS` (default: `6000`)
+- `PRE_ROLL_MS` (default: `200`)
+- `VAD_RMS_THRESHOLD` (default: `700`)
 - `AUTO_PASTE` (default: `false`)
 - `PASTE_MIN_INTERVAL_MS` (default: `700`)
 - `LOG_TO_FILE` (default: `false`)
 - `LOG_FILE` (default: `client/logs/events.jsonl`)
 - `AUDIO_INPUT_DEVICE` (default: backend default / macOS は `0`)
 - `AUDIO_CAPTURE_CMD` (default: empty, set to override capture command)
+
+会話向けの初期値の背景は `docs/realtime-conversation-defaults.md` を参照。

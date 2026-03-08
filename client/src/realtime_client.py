@@ -68,19 +68,25 @@ class RealtimeClient:
     async def send_response_create(self, event_id: str = "response-0001") -> None:
         raise RuntimeError("response.create is not supported by the current vLLM realtime server")
 
-    async def iter_events(self, timeout_sec: float = 10.0) -> AsyncIterator[dict]:
+    async def recv_event(self, timeout_sec: float = 10.0) -> dict | None:
         if self._ws is None:
             raise RuntimeError("not connected")
 
-        while True:
-            try:
-                raw = await asyncio.wait_for(self._ws.recv(), timeout=timeout_sec)
-            except asyncio.TimeoutError:
-                break
-            except websockets.ConnectionClosed:
-                break
+        try:
+            raw = await asyncio.wait_for(self._ws.recv(), timeout=timeout_sec)
+        except asyncio.TimeoutError:
+            return None
+        except websockets.ConnectionClosed:
+            return {"type": "connection.closed"}
 
-            try:
-                yield json.loads(raw)
-            except json.JSONDecodeError:
-                yield {"type": "invalid_json", "raw": raw}
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            return {"type": "invalid_json", "raw": raw}
+
+    async def iter_events(self, timeout_sec: float = 10.0) -> AsyncIterator[dict]:
+        while True:
+            event = await self.recv_event(timeout_sec)
+            if event is None or event.get("type") == "connection.closed":
+                break
+            yield event
