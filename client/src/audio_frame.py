@@ -36,8 +36,16 @@ def load_wav_as_pcm16_mono_16k(path: Path) -> bytes:
     return normalize_to_pcm16_mono_16k(raw, sample_width, channels, sample_rate)
 
 
-def split_pcm16_into_chunks(pcm16: bytes, chunk_ms: int) -> list[bytes]:
+def pcm16_bytes_per_chunk(chunk_ms: int) -> int:
     if chunk_ms not in (20, 40):
         raise ValueError("chunk_ms must be 20 or 40")
-    bytes_per_chunk = int(16000 * chunk_ms / 1000) * 2
-    return [pcm16[i : i + bytes_per_chunk] for i in range(0, len(pcm16), bytes_per_chunk) if pcm16[i : i + bytes_per_chunk]]
+    return int(16000 * chunk_ms / 1000) * 2
+
+
+def split_pcm16_into_chunks(pcm16: bytes, chunk_ms: int) -> list[bytes]:
+    bytes_per_chunk = pcm16_bytes_per_chunk(chunk_ms)
+    return [
+        pcm16[i : i + bytes_per_chunk]
+        for i in range(0, len(pcm16), bytes_per_chunk)
+        if pcm16[i : i + bytes_per_chunk]
+    ]

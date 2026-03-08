@@ -20,7 +20,7 @@
 | T06 | IN_PROGRESS | - | LAN設定手順とWindowsネットワークスクリプトを追加 |
 | T07 | IN_PROGRESS | - | Windows WAVクライアント実装を追加（実機接続試験待ち） |
 | T08 | IN_PROGRESS | - | 3経路マトリクス実行スクリプトと記録テンプレートを追加 |
-| T09 | IN_PROGRESS | - | WAV入力ベースの音声正規化/チャンク分割実装を追加 |
+| T09 | IN_PROGRESS | - | WAV入力ベースの音声正規化/チャンク分割に加え、有限秒のマイク取り込み基盤を追加 |
 | T10 | IN_PROGRESS | - | Realtime送信クライアントを追加（append/commit/response.create） |
 | T11 | IN_PROGRESS | - | TranscriptStoreと受信表示ロジックを追加 |
 | T12 | IN_PROGRESS | - | PasteControllerを追加（pbcopy + osascript） |

@@ -6,6 +6,7 @@ import asyncio
 import time
 from pathlib import Path
 
+from audio_capture import AudioCapture, chunk_count_from_duration
 from audio_frame import load_wav_as_pcm16_mono_16k, split_pcm16_into_chunks
 from config import AppConfig
 from logger import JsonlLogger
@@ -19,11 +20,24 @@ FINAL_EVENT_TYPES = {"transcription.done", "response.output_text.done"}
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Mac CLI realtime client (wav mode)")
-    p.add_argument("--wav", required=True, help="WAV file path for initial E2E")
+    p = argparse.ArgumentParser(description="Mac CLI realtime client")
+    source = p.add_mutually_exclusive_group(required=True)
+    source.add_argument("--wav", help="WAV file path for initial E2E")
+    source.add_argument("--mic", action="store_true", help="Capture from the default microphone")
     p.add_argument("--url", default="")
     p.add_argument("--model", default="")
     p.add_argument("--chunk-ms", type=int, default=0)
+    p.add_argument(
+        "--mic-seconds",
+        type=float,
+        default=5.0,
+        help="Seconds to capture when --mic is used",
+    )
+    p.add_argument(
+        "--mic-device",
+        default="",
+        help="Input device index/name for the active capture backend",
+    )
     p.add_argument("--receive-timeout", type=float, default=12.0)
     p.add_argument(
         "--no-response-create",
@@ -33,19 +47,60 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+async def send_wav_input(
+    client: RealtimeClient,
+    logger: JsonlLogger,
+    wav_path: Path,
+    chunk_ms: int,
+) -> None:
+    pcm16 = load_wav_as_pcm16_mono_16k(wav_path)
+    chunks = split_pcm16_into_chunks(pcm16, chunk_ms)
+    for i, chunk in enumerate(chunks, 1):
+        await client.send_append(chunk, f"append-{i:05d}")
+        logger.log("send_append", index=i, size=len(chunk), source="wav")
+        await asyncio.sleep(chunk_ms / 1000.0)
+
+
+async def send_mic_input(
+    client: RealtimeClient,
+    logger: JsonlLogger,
+    chunk_ms: int,
+    duration_sec: float,
+    device: str,
+) -> None:
+    capture = AudioCapture(chunk_ms=chunk_ms, device=device)
+    await capture.start()
+    logger.log(
+        "capture_start",
+        backend=(capture.command[0] if capture.command else ""),
+        device=device or "default",
+        duration_sec=duration_sec,
+    )
+
+    sent = 0
+    try:
+        async for chunk in capture.iter_chunks(
+            max_chunks=chunk_count_from_duration(duration_sec, chunk_ms)
+        ):
+            sent += 1
+            await client.send_append(chunk, f"append-{sent:05d}")
+            logger.log("send_append", index=sent, size=len(chunk), source="mic")
+    finally:
+        await capture.stop()
+        logger.log("capture_stop", chunks_sent=sent)
+
+    if sent == 0:
+        raise RuntimeError("microphone capture produced no audio chunks")
+
+
 async def run() -> int:
     args = parse_args()
     cfg = AppConfig.from_env()
 
     url = args.url or cfg.server_url
     chunk_ms = args.chunk_ms or cfg.audio_chunk_ms
-
-    wav_path = Path(args.wav)
-    if not wav_path.exists():
-        raise FileNotFoundError(f"wav not found: {wav_path}")
-
-    pcm16 = load_wav_as_pcm16_mono_16k(wav_path)
-    chunks = split_pcm16_into_chunks(pcm16, chunk_ms)
+    if args.mic and args.mic_seconds <= 0:
+        raise ValueError("--mic-seconds must be > 0")
 
     client = RealtimeClient(url=url, api_key=cfg.api_key, model=args.model)
     store = TranscriptStore()
@@ -63,10 +118,19 @@ async def run() -> int:
     try:
         await client.send_session_update()
         logger.log("send_session_update", model=args.model or client.model or "default")
-        for i, chunk in enumerate(chunks, 1):
-            await client.send_append(chunk, f"append-{i:05d}")
-            logger.log("send_append", index=i, size=len(chunk))
-            await asyncio.sleep(chunk_ms / 1000.0)
+        if args.wav:
+            wav_path = Path(args.wav)
+            if not wav_path.exists():
+                raise FileNotFoundError(f"wav not found: {wav_path}")
+            await send_wav_input(client, logger, wav_path, chunk_ms)
+        else:
+            await send_mic_input(
+                client,
+                logger,
+                chunk_ms=chunk_ms,
+                duration_sec=args.mic_seconds,
+                device=args.mic_device,
+            )
         await client.send_commit()
         commit_sent_at = time.monotonic()
         logger.log("send_commit")
